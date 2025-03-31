@@ -244,7 +244,7 @@
     
     <div id="guess-game" class="guess-container">
         <h2>🎉 Chúc mừng bạn tham gia trò chơi đoán số 🎉</h2>
-        <p>Hãy đoán số may mắn (Số may mắn là 7)</p>
+        <p>Hãy đoán số may mắn (Số may mắn là ? )</p>
         <input type="number" id="guess" placeholder="Nhập số từ 1 đến 10">
         <button class="btn" onclick="checkGuess()">Đoán số</button>
     </div>
