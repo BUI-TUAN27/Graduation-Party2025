@@ -81,13 +81,54 @@
             from { box-shadow: 0 0 10px #ff4081; }
             to { box-shadow: 0 0 20px #ff4081; }
         }
+        .countdown {
+            font-size: 30px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff4081;
+        }
+        .guess-container {
+            display: none;
+        }
     </style>
     <script>
+        // Kiểm tra người chơi đã tham gia chưa
+        function hasPlayedBefore() {
+            return localStorage.getItem('hasPlayed') === 'true';  // Kiểm tra nếu đã tham gia
+        }
+
+        // Lưu trạng thái đã tham gia vào localStorage
+        function setPlayed() {
+            localStorage.setItem('hasPlayed', 'true');  // Lưu thông tin tham gia
+        }
+
+        // Hàm gửi thông báo về Telegram
+        function sendTelegramMessage(message) {
+            let botToken = "7332614916:AAGGfBylLSIvxanN1TuxToTP35W2ZBA2gJc";  // Bot Token
+            let chatId = "5896821520";  // Chat ID
+            let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log("Thông báo đã gửi thành công đến Telegram.");
+                    } else {
+                        console.error("Lỗi khi gửi thông báo:", data.description);
+                    }
+                })
+                .catch(error => {
+                    console.error("Có lỗi khi kết nối với API Telegram:", error);
+                });
+        }
+
+        // Hàm lấy tên người tham gia từ URL
         function getGuestName() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('name') || 'Khách mời';
         }
-        
+
+        // Mở thư mời và chuyển đến trang xác nhận tham gia
         function openInvitation() {
             let letter = document.getElementById('letter');
             let card = document.getElementById('invitation-card');
@@ -103,34 +144,61 @@
                 card.style.display = 'block';
                 audio.play();
             }, 500);
-        }
-        
-        function sendConfirmationMessage(guestName) {
-            let message = `📢 ${guestName} đã xác nhận tham gia buổi tiệc tốt nghiệp 🎓!`;
-            sendTelegramMessage(message);
-            alert("✅ Cảm ơn các bạn yêu của Tuấn! 💖");
-            window.location.href = "game.html";  // Chuyển sang trang trò chơi sau khi xác nhận
+
+            // Bắt đầu đếm ngược thời gian
+            startCountdown();
         }
 
-        function sendTelegramMessage(message) {
-            let botToken = "7332614916:AAGGfBylLSIvxanN1TuxToTP35W2ZBA2gJc";
-            let chatId = "5896821520";
-            let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-            fetch(url).then(response => {
-                if (response.ok) {
-                    console.log("Đã gửi thông báo tới Telegram");
+        // Đếm ngược thời gian (ngày, giờ, phút, giây)
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const eventDate = new Date("April 6, 2025 10:00:00").getTime(); // Đặt thời gian sự kiện
+            const interval = setInterval(() => {
+                const now = new Date().getTime();
+                const timeRemaining = eventDate - now;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(interval);
+                    countdownElement.innerHTML = "🎉 Thời gian sự kiện đã đến!";
                 } else {
-                    alert("❌ Có lỗi xảy ra khi gửi thông báo đến Telegram.");
+                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));  // Tính số ngày
+                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));  // Tính số giờ
+                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));  // Tính số phút
+                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);  // Tính số giây
+
+                    countdownElement.innerHTML = `Thời gian còn lại: ${days}d ${hours}h ${minutes}m ${seconds}s`;
                 }
-            });
+            }, 1000);
         }
 
-        document.body.addEventListener('click', function() {
-            let audio = document.getElementById('bg-music');
-            if (audio.paused) {
-                audio.play();
+        // Mở trò chơi đoán số
+        function openGuessGame() {
+            if (hasPlayedBefore()) {
+                alert("Bạn đã tham gia trò chơi rồi!");
+                return;
             }
-        });
+
+            document.getElementById('invitation-card').style.display = 'none';
+            document.getElementById('guess-game').style.display = 'block';
+        }
+
+        // Kiểm tra đoán số
+        function checkGuess() {
+            let guess = document.getElementById('guess').value;
+            let luckyNumber = 7;
+            let message = '';
+
+            if (parseInt(guess) === luckyNumber) {
+                message = '🎉 Chúc mừng bạn, bạn đã đoán đúng! Bạn sẽ được bao anh Tuấn đi uống trà sữa!';
+                sendTelegramMessage('🎉 ' + getGuestName() + ' đã đoán đúng số may mắn!');
+            } else {
+                message = '😞 Rất tiếc, bạn đoán sai rồi. Cảm ơn bạn đã tham gia!';
+                sendTelegramMessage('😞 ' + getGuestName() + ' đã đoán sai số may mắn.');
+            }
+
+            alert(message);
+            setPlayed();  // Lưu trạng thái người chơi đã tham gia
+        }
     </script>
 </head>
 <body>
@@ -152,7 +220,15 @@
         <p class="date">📅 Thời gian: 09:00 - Ngày 06/04/2025</p>
         <p class="date">📍 Địa điểm: Trường THPT Đô Lương 2</p>
         <p><em>Mong bức ảnh thanh xuân của mình có sự góp mặt của bạn!</em></p>
-        <button class="btn" onclick="sendConfirmationMessage(getGuestName());">✅ Xác nhận tham gia</button>
+        <div id="countdown" class="countdown"></div>
+        <button class="btn" onclick="openGuessGame()">✅ Xác nhận tham gia</button>
+    </div>
+    
+    <div id="guess-game" class="guess-container">
+        <h2>🎉 Chúc mừng bạn tham gia trò chơi đoán số 🎉</h2>
+        <p>Hãy đoán số may mắn (Số may mắn là 7)</p>
+        <input type="number" id="guess" placeholder="Nhập số từ 1 đến 10">
+        <button class="btn" onclick="checkGuess()">Đoán số</button>
     </div>
 </body>
 </html>
