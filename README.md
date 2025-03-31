@@ -29,6 +29,7 @@
         .letter {
             width: 600px;
             transition: transform 0.5s ease-in-out;
+            opacity: 1;
         }
         .letter.open {
             transform: scale(1.2);
@@ -160,9 +161,9 @@
             // Hiển thị lời cảm ơn "Cảm ơn bạn yêu"
             let thankYouMessage = document.createElement('div');
             thankYouMessage.classList.add('thank-you-message');
-            thankYouMessage.innerHTML = `
+            thankYouMessage.innerHTML = ` 
                 <h2>❤️ Cảm ơn bạn Yêu ❤️</h2>
-                <img id="letter" class="letter" src="https://upanh.tv/image/uQLbAt">
+                <img id="letter" class="letter" src="https://upanh.tv/image/uQLRnW">
                 <button class="btn" onclick="startGuessGame()">OK</button>
             `;
             document.body.appendChild(thankYouMessage); // Thêm lời cảm ơn vào body
@@ -212,6 +213,8 @@
                 sendTelegramMessage(getGuestName() + " đã đoán đúng số may mắn! Trúng thưởng!");
             } else {
                 message = '😞 Rất tiếc, bạn đoán sai rồi. Cảm ơn bạn đã tham gia!';
+                // Gửi thông báo về Telegram cho người chọn sai số
+                sendTelegramMessage(getGuestName() + " đã đoán sai số may mắn. Cảm ơn đã tham gia!");
             }
 
             alert(message);
@@ -244,7 +247,7 @@
     
     <div id="guess-game" class="guess-container">
         <h2>🎉 Chúc mừng bạn tham gia trò chơi đoán số 🎉</h2>
-        <p>Hãy đoán số may mắn (Số may mắn là ? )</p>
+        <p>Hãy đoán số may mắn (Số may mắn là gì nè ?)</p>
         <input type="number" id="guess" placeholder="Nhập số từ 1 đến 10">
         <button class="btn" onclick="checkGuess()">Đoán số</button>
     </div>
