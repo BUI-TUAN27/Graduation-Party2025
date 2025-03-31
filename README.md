@@ -1,4 +1,3 @@
-
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -229,6 +228,4 @@
         <p>Hãy đoán số may mắn (Số may mắn là 7)</p>
         <input type="number" id="guess" placeholder="Nhập số từ 1 đến 10">
         <button class="btn" onclick="checkGuess()">Đoán số</button>
-    </div>
-</body>
-</html>
+    </div
