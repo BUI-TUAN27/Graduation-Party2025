@@ -5,62 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trò chơi đoán số may mắn</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             flex-direction: column;
             text-align: center;
+            color: #333;
         }
         .container {
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #ff4081;
+            font-weight: 600;
         }
         .input-box {
             margin: 20px 0;
         }
         .input-box input {
-            padding: 10px;
-            font-size: 1.2rem;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 2px solid #ff4081;
             width: 100%;
             text-align: center;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-box input:focus {
+            border-color: #d63384;
+            box-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
         }
         .btn {
             padding: 15px 30px;
             background: #ff4081;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1rem;
             border: none;
-            border-radius: 10px;
+            border-radius: 30px;
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
+            font-weight: 600;
+            text-transform: uppercase;
         }
         .btn:hover {
             background: #d63384;
+            transform: scale(1.05);
         }
         .message {
             margin-top: 20px;
             font-size: 1.2rem;
+            font-weight: 500;
+            color: #555;
         }
         .hidden {
             display: none;
         }
     </style>
     <script>
-        let luckyNumber = 7;  // Số may mắn cố định là 7
+        let luckyNumber = 7; 
 
         function startGame() {
             document.getElementById("start-button").classList.add("hidden");
@@ -69,7 +89,7 @@
 
         function checkGuess() {
             let userGuess = parseInt(document.getElementById("guess-input").value);
-            let guestName = getGuestName();  // Lấy tên người tham gia
+            let guestName = getGuestName(); 
 
             if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) {
                 alert("Vui lòng nhập một số từ 1 đến 10.");
@@ -77,13 +97,12 @@
             }
 
             if (userGuess === luckyNumber) {
-                document.getElementById("result-message").innerHTML = `🎉 Chúc mừng bạn, ${guestName}! Bạn đã đoán đúng! Số may mắn là ${luckyNumber}.<br>🎉 Chúc mừng bạn được bao anh Tuấn đi uống trà sữa!`;
-                sendTelegramMessage(`${guestName} đã đoán đúng số may mắn! Phần thưởng: Bao trà sữa! 🎉`);
+                document.getElementById("result-message").innerHTML = `🎉 Chúc mừng ${guestName}! Bạn đã đoán đúng số may mắn! Nhắn tin Tuấn mua trà sữa nhé 💝`;
+                sendTelegramMessage(`${guestName} đã đoán đúng số may mắn!`);
             } else {
-                document.getElementById("result-message").innerHTML = `❌ Bạn đoán sai! Số may mắn là ${luckyNumber}.<br>Chúc bạn may mắn lần sau!`;
+                document.getElementById("result-message").innerHTML = `❌ Bạn đoán sai! Số may mắn là ${luckyNumber}.`;
                 sendTelegramMessage(`${guestName} đã đoán sai số may mắn.`);
             }
-
             document.getElementById("result-message").classList.remove("hidden");
         }
 
@@ -91,13 +110,7 @@
             let botToken = "7332614916:AAGGfBylLSIvxanN1TuxToTP35W2ZBA2gJc";
             let chatId = "5896821520";
             let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-            fetch(url).then(response => {
-                if (response.ok) {
-                    console.log("Thông báo đã gửi thành công đến Telegram.");
-                } else {
-                    console.log("Lỗi khi gửi thông báo đến Telegram.");
-                }
-            });
+            fetch(url).then(response => console.log("Thông báo đã gửi"));
         }
 
         function getGuestName() {
@@ -109,12 +122,8 @@
 <body>
     <div class="container">
         <h1>🎲 Trò chơi đoán số may mắn 🎲</h1>
-        <p>Đoán số may mắn là 7 để nhận phần thưởng!</p>
-
-        <!-- Khu vực chào mừng -->
+        <p>Đoán số may mắn từ 1-10 để nhận phần thưởng!</p>
         <button id="start-button" class="btn" onclick="startGame()">Bắt đầu chơi</button>
-
-        <!-- Khu vực trò chơi -->
         <div id="game-area" class="hidden">
             <div class="input-box">
                 <input type="number" id="guess-input" placeholder="Nhập số bạn đoán (1-10)" />
