@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -69,17 +69,19 @@
 
         function checkGuess() {
             let userGuess = parseInt(document.getElementById("guess-input").value);
+            let guestName = getGuestName();  // Lấy tên người tham gia
+
             if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) {
                 alert("Vui lòng nhập một số từ 1 đến 10.");
                 return;
             }
 
             if (userGuess === luckyNumber) {
-                document.getElementById("result-message").innerHTML = "🎉 Chúc mừng bạn đã đoán đúng! Số may mắn là " + luckyNumber;
-                sendTelegramMessage(`🎉 ${getGuestName()} đã đoán đúng số may mắn!`);
+                document.getElementById("result-message").innerHTML = `🎉 Chúc mừng bạn, ${guestName}! Bạn đã đoán đúng! Số may mắn là ${luckyNumber}.<br>🎉 Chúc mừng bạn được bao anh Tuấn đi uống trà sữa!`;
+                sendTelegramMessage(`${guestName} đã đoán đúng số may mắn! Phần thưởng: Bao trà sữa! 🎉`);
             } else {
-                document.getElementById("result-message").innerHTML = `❌ Bạn đoán sai! Số may mắn là ${luckyNumber}`;
-                sendTelegramMessage(`❌ ${getGuestName()} đã đoán sai số may mắn.`);
+                document.getElementById("result-message").innerHTML = `❌ Bạn đoán sai! Số may mắn là ${luckyNumber}.<br>Chúc bạn may mắn lần sau!`;
+                sendTelegramMessage(`${guestName} đã đoán sai số may mắn.`);
             }
 
             document.getElementById("result-message").classList.remove("hidden");
