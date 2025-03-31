@@ -106,7 +106,13 @@
             let botToken = "7332614916:AAGGfBylLSIvxanN1TuxToTP35W2ZBA2gJc";  // Bot Token
             let chatId = "5896821520";  // Chat ID
             let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-
+  fetch(url).then(response => {
+                if (response.ok) {
+                    alert("✅ Cảm ơn bạn Yêu 💕!");
+                } else {
+                    alert("❌ Có lỗi xảy ra, vui lòng thử lại.");
+                }
+            });
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
