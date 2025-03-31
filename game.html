@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trò chơi đoán số may mắn</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #ff4081;
+        }
+        .input-box {
+            margin: 20px 0;
+        }
+        .input-box input {
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 100%;
+            text-align: center;
+        }
+        .btn {
+            padding: 15px 30px;
+            background: #ff4081;
+            color: white;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #d63384;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+        let luckyNumber = 7;  // Số may mắn cố định là 7
+
+        function startGame() {
+            document.getElementById("start-button").classList.add("hidden");
+            document.getElementById("game-area").classList.remove("hidden");
+        }
+
+        function checkGuess() {
+            let userGuess = parseInt(document.getElementById("guess-input").value);
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) {
+                alert("Vui lòng nhập một số từ 1 đến 10.");
+                return;
+            }
+
+            if (userGuess === luckyNumber) {
+                document.getElementById("result-message").innerHTML = "🎉 Chúc mừng bạn đã đoán đúng! Số may mắn là " + luckyNumber;
+                sendTelegramMessage(`🎉 ${getGuestName()} đã đoán đúng số may mắn!`);
+            } else {
+                document.getElementById("result-message").innerHTML = `❌ Bạn đoán sai! Số may mắn là ${luckyNumber}`;
+                sendTelegramMessage(`❌ ${getGuestName()} đã đoán sai số may mắn.`);
+            }
+
+            document.getElementById("result-message").classList.remove("hidden");
+        }
+
+        function sendTelegramMessage(message) {
+            let botToken = "7332614916:AAGGfBylLSIvxanN1TuxToTP35W2ZBA2gJc";
+            let chatId = "5896821520";
+            let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+            fetch(url).then(response => {
+                if (response.ok) {
+                    console.log("Thông báo đã gửi thành công đến Telegram.");
+                } else {
+                    console.log("Lỗi khi gửi thông báo đến Telegram.");
+                }
+            });
+        }
+
+        function getGuestName() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('name') || 'Khách mời';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Trò chơi đoán số may mắn 🎲</h1>
+        <p>Đoán số may mắn là 7 để nhận phần thưởng!</p>
+
+        <!-- Khu vực chào mừng -->
+        <button id="start-button" class="btn" onclick="startGame()">Bắt đầu chơi</button>
+
+        <!-- Khu vực trò chơi -->
+        <div id="game-area" class="hidden">
+            <div class="input-box">
+                <input type="number" id="guess-input" placeholder="Nhập số bạn đoán (1-10)" />
+            </div>
+            <button class="btn" onclick="checkGuess()">Đoán số</button>
+            <div id="result-message" class="message hidden"></div>
+        </div>
+    </div>
+</body>
+</html>
