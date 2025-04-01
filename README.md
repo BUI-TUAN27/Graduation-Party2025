@@ -208,7 +208,7 @@
             let message = '';
 
             if (parseInt(guess) === luckyNumber) {
-                message = '🎉 Chúc mừng bạn, bạn đã đoán đúng! Bạn sẽ được bao anh Tuấn đi uống trà sữa!';
+                message = '🎉 Chúc mừng bạn, bạn đã đoán đúng! Bạn sẽ được anh Tuấn đưa đi uống trà sữa !';
                 // Gửi thông báo về Telegram cho người trúng thưởng
                 sendTelegramMessage(getGuestName() + " đã đoán đúng số may mắn! Trúng thưởng!");
             } else {
